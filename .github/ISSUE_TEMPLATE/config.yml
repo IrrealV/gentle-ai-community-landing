@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Landing context
+    url: ./../landing-context.md
+    about: Read the current synthesis before opening a change.

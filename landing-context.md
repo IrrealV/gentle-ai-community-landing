@@ -4,9 +4,9 @@ This document collects the best ideas from the available landing pages so we can
 
 ## Sources imported into this folder
 
-- `repo-yo/` — cloned from `https://github.com/IrrealV/gentle-landing`
-- `repo-fabri/` — cloned from `https://github.com/IrrealV/gentle-landing`
-- `repo-gerardo/` — cloned from `https://github.com/IrrealV/gentle-landing`
+- `repo-irrealv/` — cloned from `https://github.com/IrrealV/gentle-landing`
+- `repo-fabri/` — cloned from `https://github.com/fabriortenzi/gentle-ai-landing`
+- `repo-gerardo/` — cloned from `https://github.com/GerardoFC8/landing-gentle-ai`
 - Becker landing — public site at `https://gentleai.vercel.app/`
 
 ## Important note about the three GitHub repos

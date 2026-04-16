@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Landing context
-    url: ./../landing-context.md
+    url: https://github.com/IrrealV/gentle-ai-community-landing/blob/main/landing-context.md
     about: Read the current synthesis before opening a change.
+  - name: Landing strengths
+    url: https://github.com/IrrealV/gentle-ai-community-landing/blob/main/landing-strengths.md
+    about: Per-repo strong points and ideas worth reusing.

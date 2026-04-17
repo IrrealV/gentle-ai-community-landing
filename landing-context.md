@@ -1,170 +1,130 @@
 # Gentle-AI landing context
 
-This document collects the best ideas from the available landing pages so we can build a single community-owned version with the strongest parts of each one.
+This document is the synthesis that drives the community landing. It describes the reference sources, what each one does well, and the merged direction we'll build from.
 
-## Sources imported into this folder
+## Goal
 
-- `repo-yo/` — cloned from `https://github.com/IrrealV/gentle-landing`
-- `repo-fabri/` — cloned from `https://github.com/IrrealV/gentle-landing`
-- `repo-gerardo/` — cloned from `https://github.com/IrrealV/gentle-landing`
-- Becker landing — public site at `https://gentleai.vercel.app/`
+Build a single community-owned landing for **GENTLE-AI** by combining the strongest parts of four existing landings, instead of forking any single one of them.
 
-## Important note about the three GitHub repos
+## Reference sources
 
-The three GitHub sources are the same repository snapshot, not three different codebases. They all resolved to the same commit (`b822ece4e0bef48c66de895677d128222acd27a4`). So the real comparison is:
+Four independent Astro landings, each built by a different contributor. The live site column only reflects confirmed public deployments at the time of writing.
 
-- the shared Astro implementation in the repo clones
-- the public Becker landing as a separate reference
+| Author   | Repository                                                          | Live site                      |
+|----------|---------------------------------------------------------------------|--------------------------------|
+| Fabri    | https://github.com/fabriortenzi/gentle-ai-landing                   | —                              |
+| Gerardo  | https://github.com/GerardoFC8/landing-gentle-ai                     | —                              |
+| IrrealV  | https://github.com/IrrealV/gentle-landing                           | —                              |
+| Becker   | https://github.com/niko05becker/gentleai-landing                    | https://gentleai.vercel.app/   |
 
-That is still useful: the cloned repo gives us the actual implementation decisions, and Becker gives us an external design/copy alternative.
+### Local clones
+
+For local inspection contributors may clone each repo into sibling folders:
+
+- `repo-fabri/`
+- `repo-gerardo/`
+- `repo-irrealv/`
+- `repo-becker/`
+
+These folders are listed in `.gitignore` and **must not be committed**. The canonical source of each landing is the GitHub repository above, not the local clone.
+
+## Quick comparison
+
+| Aspect                       | Fabri                          | Gerardo                              | IrrealV                                  | Becker                                |
+|------------------------------|--------------------------------|--------------------------------------|------------------------------------------|---------------------------------------|
+| Framework                    | Astro 6, vanilla               | Astro 5 + React islands              | Astro 6, vanilla                         | Astro 5, vanilla                      |
+| Tailwind                     | 4 (vite plugin)                | 4 (vite plugin)                      | 4 (vite plugin)                          | 3 (classic integration)               |
+| Pages                        | Single scroll                  | Single scroll (+ `/es/`)             | Multi-page (`/`, `/features`, `/how-it-works`, `/docs`, `/demo`) | Single scroll                         |
+| i18n                         | None                           | Route-split EN/ES                    | DOM-swap EN/ES                           | None                                  |
+| Live GitHub stats            | Hardcoded                      | Server-side at build                 | Client-side with sessionStorage cache    | Hardcoded                             |
+| Interactive demo             | —                              | React island (xterm)                 | Dedicated `/demo` page                   | —                                     |
+| Hero signature               | Cycling typed-terminal         | Two-column + xterm island            | Two-column + install tabs + OS auto-detect | macOS-window install widget + presets |
+| Deployed & inspectable live  | Not confirmed                  | Not confirmed                        | Not confirmed                            | Yes                                   |
 
 ## What each source does well
 
-### 1) Shared GitHub landing (`repo-yo`, `repo-fabri`, `repo-gerardo`)
+A detailed per-landing breakdown lives in [`landing-strengths.md`](./landing-strengths.md). The short version:
 
-#### Strong points
+- **Fabri** — cleanest typography (Iosevka), a looping typed-terminal hero, and the most disciplined `prefers-reduced-motion` handling.
+- **Gerardo** — the richest narrative (Problem → Solution → pillars → ecosystem → build-your-own), route-split EN/ES i18n, server-side GitHub stats, JSON-LD SEO.
+- **IrrealV** — the only true multi-page site with a real docs manual and a keyboard-driven demo; OS auto-detection and full ARIA-compliant install tabs.
+- **Becker** — the only landing actually deployed, with the strongest brand polish: macOS-window install widget, build-time OG images, complete meta/OG/Twitter/favicon kit, and a "Presets" section that frames buyer intent.
 
-- Very clear product framing: **“One command. Any agent. Any OS.”**
-- Strong install-first hero with OS-specific tabs (`brew`, `go install`, `scoop`)
-- Good proof of substance:
-  - GitHub stars / forks / release badge
-  - explicit supported agents
-  - explicit component catalog
-- Nice conversion path:
-  - install
-  - docs
-  - demo
-- The docs page is unusually strong for a landing:
-  - explains the system like a manual
-  - includes install commands
-  - maps SDD phases to artifacts
-  - shows the ecosystem as a matrix, not just marketing copy
-- The demo page is honest and useful:
-  - says it is a browser reconstruction, not the native runtime
-  - gives keyboard help
-  - includes a mobile warning instead of pretending mobile is ideal
-- Spanish/English copy is already in the implementation, which is good for a community project.
+## Merge strategy for the community landing
 
-#### Weak points
+### Hero
 
-- The landing is a bit **too product-manual-ish** in places; it reads strong technically, but not always emotionally memorable.
-- Some sections are dense and can feel like documentation before persuasion.
-- The home page tries to do a lot at once:
-  - install
-  - feature overview
-  - onboarding
-  - process explanation
-  - stats
-  That is useful, but can dilute the main message.
-- Because all three clones are identical, there is no internal diversity to mine; we need to synthesize rather than compare variants.
+- Keep the official headline: **"One command. Any agent. Any OS."** (tri-line, gradient on the last phrase).
+- Use Becker's **macOS-window install widget** as the primary visual.
+- Inside that widget, use IrrealV's **OS auto-detection**, keyboard-navigable tabs (ARIA `role="tablist"`), and copy buttons.
+- Frame the widget with Gerardo's **two-column asymmetric layout**: left = pitch + version badge + CTAs, right = widget.
+- Fetch the version badge **server-side at build time** (Gerardo's `lib/github.ts` pattern) and link it to the specific release, Becker-style.
+- Fabri's looping-typing terminal is beautiful but redundant with an install widget — reserve it for a secondary "watch it cycle" surface or drop it.
 
-#### Best ideas to keep
+### Site structure
 
-- OS-specific install tabs in the hero
-- Copy buttons for commands
-- Clear GitHub proof points
-- Demo as a browser reconstruction with honesty labels
-- Multi-language labels
-- A docs page that behaves like a real product manual
+Adopt IrrealV's **multi-page model**:
 
----
+- `/` — marketing home
+- `/features`
+- `/how-it-works`
+- `/docs` — real manual, sidebar + prev/next navigation
+- `/demo` — keyboard-driven Bubbletea reconstruction, honest about being a browser reconstruction
 
-### 2) Becker public landing (`gentleai.vercel.app`)
+On `/`, follow Gerardo's narrative arc and insert Becker's **Presets** section before install:
 
-#### Strong points
+1. Hero (install-first)
+2. Problem
+3. Solution with pillars (Engram / SDD / Skills / Persona)
+4. How it works
+5. Agents grid (data-driven)
+6. Build-your-own-agent
+7. Presets (Full Gentleman / Ecosystem Only / Minimal / Custom)
+8. Install
+9. Community / Final CTA
+10. Footer
 
-- Much cleaner, more direct hero copy:
-  - **“One command. Any agent. Any OS.”**
-  - very fast to understand
-- Strong punchy positioning for the ecosystem/configurator angle
-- Good marketing rhythm:
-  - install
-  - what it does
-  - agents
-  - components
-  - install
-  That cadence is easy to scan.
-- The page balances marketing and product detail without drowning in documentation.
-- It keeps the brand language sharp and concise.
+### Aesthetic
 
-#### Weak points
+- Becker's polish as the baseline: full meta/OG/Twitter/manifest/favicon kit, Satori-based **build-time OG image generation**, custom-cursor + parallax radial glow.
+- Gerardo's tri-token color system (`primary / secondary / tertiary`) with gradient accents.
+- Fabri's `prefers-reduced-motion` discipline baked in from day one.
+- Terminal/engineering vibe carried across all surfaces — no generic SaaS visuals.
 
-- It is less complete as a technical reference than the GitHub repo landing.
-- Less of the “why this is serious” depth than the docs-heavy version.
-- Without the repo, we cannot inspect implementation decisions or code structure.
+### i18n
 
-#### Best ideas to keep
+- Gerardo's **route-split** approach (`/` + `/es/`) wins over DOM-swap on SEO.
+- Reuse the existing `src/i18n/{en,es}.ts` contract as the starting point.
 
-- The top-line positioning
-- The short, memorable language
-- The visual hierarchy that lets the value proposition land immediately
-- The less-bloated marketing tone
+### Data layer
 
----
+- One source of truth per domain, following Gerardo's pattern:
+  - `src/data/agents.ts` — agent list with logos and descriptions
+  - `src/data/presets.ts` — Becker's presets as editable data
+  - `src/lib/github.ts` — build-time GitHub fetch (stars, forks, release, contributors)
 
-## Best parts to merge into the community landing
+### Content rules
 
-### Messaging
+- Factual, not hypey.
+- Explain the ecosystem in one sentence first.
+- Separate marketing copy (`/`) from manual copy (`/docs`).
+- Bilingual EN/ES is a first-class requirement, not an afterthought.
+- The demo page is honest about being a browser reconstruction.
 
-Use Becker’s compact hero language, but back it with the technical credibility of the GitHub landing.
+## Community project direction (secondary track)
 
-Recommended direction:
+Governance layer for this repo:
 
-- headline: short and memorable
-- subheadline: one sentence explaining what Gentle-AI actually is
-- supporting line: memory + SDD + skills + persona + routing
-- CTA set: install / docs / demo
-
-### Structure
-
-1. Hero with install-first CTA
-2. Trust/proof section
-3. Clear “what it does” section
-4. “How it works” / SDD pipeline
-5. Docs/manual section
-6. Demo section
-7. Community/contribution section
-
-### Visual decisions
-
-- Keep the terminal/engineering aesthetic from the GitHub landing
-- Keep Becker’s restraint and clarity
-- Avoid overloading the first screen with too many concepts
-- Use progressive disclosure: the landing should invite deeper reading, not dump everything at once
-
-### Content decisions
-
-- Be factual, not hypey
-- Explain the ecosystem in a single sentence first
-- Separate marketing copy from technical manual copy
-- Keep English + Spanish support from the repo
-- Make the demo feel like a product, not a toy
-
-## Community project direction (secondary task)
-
-Not implemented yet, but this is the right shape for a community repo:
-
-- protect `main`
-- require PRs for changes
-- add contribution guidelines
-- add PR review rules
-- add a clear code/style standard
-- define ownership for copy, design, and technical changes
-- keep repo snapshots and imported references documented
-
-## Recommendation
-
-The best landing is **not** any single one of these.
-
-It should combine:
-
-- Becker’s short, confident hook
-- the GitHub landing’s technical credibility
-- the docs/manual depth
-- the honest interactive demo framing
-
-In practice: **simple hero, serious proof, clear workflow, strong docs, honest demo**.
+- Protect `main`.
+- Require PRs for every change.
+- Add contribution guidelines.
+- Add PR review rules.
+- Define ownership for copy, design, and technical changes.
+- Keep the reference repos as **remote links**, not as committed snapshots.
 
 ## Next step
 
-Build the community landing from this synthesis and then add the community governance layer as a secondary pass.
+1. Scaffold the community landing from this synthesis (Astro + Tailwind 4 + route-split i18n).
+2. Port the merged hero, presets section, and install widget first.
+3. Add `/docs` and `/demo` pages in a second pass.
+4. Layer the governance automation on top once the page is live.

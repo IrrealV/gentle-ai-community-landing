@@ -8,6 +8,7 @@ Recommended settings:
 
 - Require a pull request before merging
 - Require at least 1 review
+- Require code owner reviews when CODEOWNERS is present
 - Dismiss stale reviews when new commits are pushed
 - Require conversation resolution before merge
 - Require status checks to pass

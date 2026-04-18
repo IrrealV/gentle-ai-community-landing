@@ -26,6 +26,7 @@ Build one shared landing page by combining the best ideas from four independent 
 - All changes go through PRs.
 - PRs must link an approved issue.
 - PRs must use exactly one `type:*` label.
+- PRs must get at least one code owner review.
 - Copy should stay factual and consistent with the product.
 
 ## Governance files

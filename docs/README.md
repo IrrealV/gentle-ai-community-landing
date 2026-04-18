@@ -182,7 +182,7 @@ Rules:
 
 - Cross-domain PRs need **both** leads to approve.
 - A lead may delegate, but ownership does not transfer without a PR updating this document.
-- No lead may merge their own PR without a second approval.
+- A lead may merge their own PR once the required review rules are satisfied.
 
 ### 4.2 Known risks
 

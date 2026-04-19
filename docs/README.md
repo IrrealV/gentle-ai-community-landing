@@ -131,7 +131,10 @@ Section order:
 6. **Agents grid** — data-driven from `src/data/agents.ts`.
 7. **Build your own agent** — Gerardo.
 8. **Presets** — Full Gentleman / Ecosystem Only / Minimal / Custom, Becker (unique).
-9. **Install** — five methods: curl, brew, scoop, go install, PowerShell, Fabri.
+9. **Install** — five methods: curl, brew, scoop, go install, PowerShell, Fabri. This section must also document the **post-install lifecycle**, which none of the four reference landings covered:
+   - `sync` — the command that pulls the latest agents, skills, and presets after a successful install.
+   - **Auto-update** — the mechanism that keeps an installed ecosystem current without the user running `sync` manually.
+   - Both belong in `src/data/install.ts` as first-class entries, not as an afterthought in prose.
 10. **Community + Final CTA**.
 11. **Footer**.
 
@@ -208,5 +211,6 @@ After that, Phase 1 starts.
 
 - [`../landing-context.md`](../landing-context.md) — high-level synthesis and merge strategy.
 - [`../landing-strengths.md`](../landing-strengths.md) — per-repo strengths, weaknesses, and ideas to reuse.
+- [`../feedback_gentleman.md`](../feedback_gentleman.md) — per-landing review from the Gentleman, source of the `sync` / auto-update requirement.
 - [`../CONTRIBUTING.md`](../CONTRIBUTING.md) — contribution workflow.
 - [`../GOVERNANCE.md`](../GOVERNANCE.md) — repository governance rules.

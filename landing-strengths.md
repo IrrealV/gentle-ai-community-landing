@@ -243,6 +243,46 @@ Only some have:
 
 Tailwind version split: Fabri / Gerardo / IrrealV are on v4 with the vite plugin, Becker is still on v3 with the classic integration.
 
+## Gentleman feedback synthesis
+
+After the planning documents were merged, the Gentleman reviewed the four reference landings and produced the feedback captured in [`feedback_gentleman.md`](./feedback_gentleman.md). This section maps that review back to the decisions in [`docs/README.md`](./docs/README.md) so the evidence is traceable.
+
+### Decisions confirmed by the review
+
+| Unified-plan decision | Gentleman signal | Source landing |
+|-----------------------|------------------|----------------|
+| Macos-window install widget in the hero | "Instalación debe estar al principio, no oculta tras mucho scroll" | general |
+| Iosevka mono font | "Usar Iosevka (la favorita de The Gentleman) para bloques de código" | Fabri |
+| OS auto-detection on install tabs | "Selector de OS: filtrar los comandos por Sistema Operativo es muy útil" | Fabri |
+| Problem → Solution narrative | "Atacar el problema primero es una estrategia de marketing muy buena" | Gerardo |
+| Build-time GitHub stats (no hardcoded numbers) | "recomendó que sean datos vivos vía API" | Becker |
+| Keyboard-driven `/demo` as a dedicated page | "La simulación del uso con teclado es espectacular" | IrrealV |
+| Route-split EN/ES i18n | "Tener la página en español e inglés" was a standout of IrrealV's | IrrealV |
+| React islands restricted to `/demo` | "sugirió quitar el movimiento de la cara" (too much motion) and the responsive breakage on Gerardo's React-heavy build | Gerardo |
+| Presets section (Full / Ecosystem / Minimal / Custom) | "La sección donde explica el Core Stack y los componentes ayuda mucho" | Becker |
+
+### New requirements surfaced by the review
+
+| Requirement | Why it was missed | Where it now lives |
+|-------------|-------------------|--------------------|
+| `sync` command | None of the four landings documented it | `docs/README.md` Phase 1 §9 + `src/data/install.ts` |
+| Auto-update flow | Same gap | `docs/README.md` Phase 1 §9 + `src/data/install.ts` |
+| Card alignment discipline (bottom-aligned CTAs) | Only Becker had the issue visibly | Phase 0 design tokens + component conventions |
+| Minimum contrast on body text | Flagged across all four landings | Phase 0 design tokens (palette + WCAG AA target) |
+| Avoid grey-on-grey that reads as `disabled` | Flagged on Fabri | Phase 0 design tokens |
+| No ASCII "kiss" or leftover dev easter eggs | Flagged on IrrealV | `/demo` acceptance criteria |
+
+### Anti-patterns the review made explicit
+
+- **Fake-button circles** (Fabri): decorative elements that look clickable but do nothing. Our tokens must distinguish interactive from decorative at the component level.
+- **Missing install follow-through** (Fabri): hiding the fact that `skill-registry` and `init` are required. The install section must list every step the user actually has to run, in order.
+- **CTA that skips the narrative** (IrrealV "Get Started" at the top): the hero CTA can take the user to install, but it cannot bypass the problem/solution framing for a first-time visitor.
+- **Uneven scaling in visual grids** (Gerardo model faces, Becker Skills): consistent sizing is a design-token concern, not a per-component fix.
+
+This synthesis is the evidence trail future PRs cite when a reviewer asks "where did this requirement come from?". When a new piece of feedback arrives, it is appended here first, then propagated into the relevant ADR or roadmap section.
+
+---
+
 ## How this feeds the community landing
 
 The merge strategy and final architecture live in [`landing-context.md`](./landing-context.md). This document is the evidence trail behind each decision — when somebody asks "why are we using the macOS window widget?", this file is the answer.

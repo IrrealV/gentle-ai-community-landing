@@ -1,7 +1,8 @@
 # ADR-001 — Base stack for the unified community landing
 
-- **Status**: Proposed
-- **Date**: 2026-04-16
+- **Status**: Accepted
+- **Proposed**: 2026-04-16
+- **Accepted**: 2026-04-19
 - **Deciders**: Community leads (Fabri, Gerardo, IrrealV, Becker)
 - **Supersedes**: —
 - **Superseded by**: —
@@ -27,6 +28,8 @@ The four reference landings provide real evidence — not speculation — about 
 - Gerardo's React-island-heavy approach produced the largest bundle and highest maintenance cost.
 - Becker's Satori-based OG generation is the only build-time image pipeline of the four and has proven sustainable in production.
 - IrrealV's `node --test` smoke suite is the only automated safety net and is lightweight enough to keep.
+
+After this ADR was drafted, the Gentleman delivered a per-landing review (see [`../../feedback_gentleman.md`](../../feedback_gentleman.md)). That review independently confirmed the decisions below — notably the Iosevka mono font, install-at-the-top via the macOS-window widget, route-split bilingualism, and the rejection of a React-island-heavy architecture. No decision in this ADR was revised as a result of the review.
 
 ## Decision
 

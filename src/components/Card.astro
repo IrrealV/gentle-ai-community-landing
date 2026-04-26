@@ -1,0 +1,36 @@
+---
+/**
+ * Generic card with a bottom-aligned footer slot.
+ *
+ * Why bottom-aligned: the Gentleman flagged Becker's preset cards for CTAs
+ * drifting up when descriptions are short. Cards in this landing MUST keep
+ * footer content at the bottom across uneven rows.
+ */
+interface Props {
+  class?: string;
+  /** When true, the card gets a subtle ring accent (use sparingly). */
+  highlight?: boolean;
+  /** Optional href turns the card into an `<a>`. */
+  href?: string;
+}
+
+const { class: className = '', highlight = false, href } = Astro.props;
+
+const baseClasses = [
+  'card group relative flex h-full flex-col rounded-xl border bg-[var(--color-surface)] p-6 transition-colors duration-200',
+  highlight
+    ? 'border-[var(--color-primary)]/40 ring-1 ring-[var(--color-primary)]/30 hover:border-[var(--color-primary)]/60'
+    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/40',
+].join(' ');
+
+const Tag = href ? 'a' : 'div';
+---
+
+<Tag class={`${baseClasses} ${className}`} href={href} target={href ? '_blank' : undefined} rel={href ? 'noopener noreferrer' : undefined}>
+  <div class="flex flex-1 flex-col">
+    <slot />
+  </div>
+  <div class="mt-auto pt-4">
+    <slot name="footer" />
+  </div>
+</Tag>

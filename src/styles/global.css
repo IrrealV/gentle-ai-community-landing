@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/*
+ * Self-hosted Iosevka mono (Fabri pattern).
+ * Resolved at build time via @fontsource — no Google Fonts, no CORS.
+ */
+@import "@fontsource/iosevka/400.css";
+@import "@fontsource/iosevka/600.css";
+@import "@fontsource/iosevka/700.css";
+
+/*
+ * Design tokens — iconic Gentleman palette.
+ *
+ * Tri-token accents converged from Fabri (#ea1889) and Gerardo (#E91E8C):
+ *   - primary    fuchsia  (the Gentleman signature)
+ *   - secondary  cyan     (Gerardo)
+ *   - tertiary   purple   (Gerardo + Fabri accent-soft)
+ *
+ * Iosevka mono is Fabri's pattern. Spacing + radius follow Tailwind 4 defaults
+ * with an explicit semantic radius scale (Becker pattern).
+ *
+ * Default theme is DARK to match the brand surfaces of all four reference
+ * landings. Light mode is an `@media (prefers-color-scheme: light)` opt-in
+ * with primary slightly toned for WCAG AA contrast on white.
+ */
+@theme {
+  /* tri-token accents */
+  --color-primary: #E91E8C;
+  --color-primary-dim: #b8126b;
+  --color-secondary: #22d3ee;
+  --color-tertiary: #a855f7;
+
+  /* dark surface set — brand default */
+  --color-dark: #0a0a0f;
+  --color-surface: #12121a;
+  --color-surface-muted: #1a1a26;
+  --color-fg: #e4e4ef;
+  --color-fg-muted: #9090ab;
+  --color-border: #1e1e2e;
+
+  /* terminal traffic-light dots (Becker palette) */
+  --color-terminal-red: #ff5f57;
+  --color-terminal-yellow: #febc2e;
+  --color-terminal-green: #28c840;
+
+  /* font stacks */
+  --font-mono: "Iosevka", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* radius scale */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+/* Light mode opt-in — keeps the brand identity but flips surfaces. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-dark: #f4f4f8;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f4f4f8;
+    --color-fg: #0a0a1a;
+    --color-fg-muted: #5a5a75;
+    --color-border: #dddde8;
+    --color-primary: #d4177e;
+  }
+}
+
+html,
+body {
+  background-color: var(--color-dark);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
+
+main,
+section {
+  background-color: transparent;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-dark);
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}
+
+/*
+ * Scroll reveal system (Fabri pattern).
+ * Every section uses <SectionWrapper> which sets `data-reveal` + `data-reveal-type`.
+ * The IntersectionObserver script in BaseLayout.astro toggles `.reveal-visible`.
+ */
+.reveal-prep {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+[data-reveal-type='fade'].reveal-prep {
+  transform: none;
+}
+
+[data-reveal-type='slide-left'].reveal-prep {
+  transform: translate3d(-24px, 0, 0);
+}
+
+[data-reveal-type='slide-right'].reveal-prep {
+  transform: translate3d(24px, 0, 0);
+}
+
+[data-reveal-type='scale'].reveal-prep {
+  transform: scale(0.97);
+}
+
+.reveal-prep.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * Stagger group: container has `data-reveal-stagger`, each child has
+ * `data-reveal-item` and an optional `--stagger-step` (default 80ms).
+ */
+[data-reveal-stagger] [data-reveal-item] {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition:
+    opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--stagger-index, 0) * var(--stagger-step, 80ms));
+}
+
+[data-reveal-stagger].is-revealed [data-reveal-item] {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * Global reduced-motion safety net (Fabri pattern).
+ * Components MUST also opt out via src/lib/motion.ts — this is a backstop,
+ * not a license to skip the JS check.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal-prep,
+  [data-reveal-stagger] [data-reveal-item] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

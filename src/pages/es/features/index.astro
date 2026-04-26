@@ -1,0 +1,17 @@
+---
+import SubPageLayout from '../../../layouts/SubPageLayout.astro';
+import FeaturesContent from '../../../sections/FeaturesContent.astro';
+import { t } from '../../../i18n';
+
+const dict = t('es');
+---
+
+<SubPageLayout
+  title={dict.featuresPage.meta.title}
+  description={dict.featuresPage.meta.description}
+  locale="es"
+  ogSlug="features-es"
+  canonicalPath="/es/features/"
+>
+  <FeaturesContent locale="es" />
+</SubPageLayout>

@@ -1,0 +1,311 @@
+---
+/**
+ * /demo body — keyboard-driven xterm reconstruction (vanilla, no React).
+ *
+ * The terminal output is hardcoded English to match the real `gentle-ai` CLI.
+ * Page chrome (eyebrow, headlines, shortcuts panel, CTA) is locale-aware.
+ */
+import '@xterm/xterm/css/xterm.css';
+import { t, type Locale } from '../i18n';
+import SectionWrapper from '../components/SectionWrapper.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+<!-- Hero -->
+<SectionWrapper id="demo-hero" reveal={false} class="pt-28 md:pt-36">
+  <div class="mx-auto max-w-3xl text-center">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-primary)]">
+      {dict.demoPage.hero.eyebrow}
+    </span>
+    <h1 class="mt-3 text-4xl font-bold leading-[1.1] tracking-tight text-[var(--color-fg)] sm:text-5xl md:text-6xl">
+      {dict.demoPage.hero.headline}
+    </h1>
+    <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.demoPage.hero.subheadline}
+    </p>
+  </div>
+</SectionWrapper>
+
+<!-- Demo body -->
+<SectionWrapper id="demo-body" revealType="fade-up">
+  <!-- Mobile warning (visible below md) -->
+  <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-muted)]/40 p-5 md:hidden">
+    <h2 class="text-base font-semibold text-[var(--color-fg)]">
+      {dict.demoPage.mobileWarning.title}
+    </h2>
+    <p class="mt-2 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+      {dict.demoPage.mobileWarning.body}
+    </p>
+  </div>
+
+  <!-- Terminal wrapper (md+) -->
+  <div class="hidden md:grid md:grid-cols-12 md:gap-6">
+    <div class="md:col-span-8">
+      <div class="overflow-hidden rounded-xl border border-[var(--color-border)] bg-[#0a0a0f] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.8)]">
+        <div class="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 py-2.5">
+          <div class="flex gap-1.5" aria-hidden="true">
+            <span class="h-3 w-3 rounded-full bg-[var(--color-terminal-red)]/80"></span>
+            <span class="h-3 w-3 rounded-full bg-[var(--color-terminal-yellow)]/80"></span>
+            <span class="h-3 w-3 rounded-full bg-[var(--color-terminal-green)]/80"></span>
+          </div>
+          <span class="ml-2 font-mono text-xs text-[var(--color-fg-muted)]">gentle-ai · demo</span>
+        </div>
+        <div
+          id="xterm-host"
+          data-demo-host
+          class="h-[480px] w-full p-3"
+          aria-label="Gentle AI demo terminal"
+          tabindex="0"
+        ></div>
+      </div>
+    </div>
+
+    <aside class="space-y-5 md:col-span-4">
+      <!-- Shortcuts panel -->
+      <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+        <h2 class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-primary)]">
+          {dict.demoPage.shortcuts.label}
+        </h2>
+        <ul class="mt-4 space-y-3">
+          {
+            dict.demoPage.shortcuts.items.map((item) => (
+              <li class="flex items-start gap-3">
+                <span class="flex flex-shrink-0 gap-1">
+                  {item.keys.map((key) => (
+                    <kbd class="inline-flex h-7 min-w-7 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-1.5 font-mono text-xs text-[var(--color-fg)]">
+                      {key}
+                    </kbd>
+                  ))}
+                </span>
+                <span class="text-sm text-[var(--color-fg-muted)]">
+                  {item.description}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Honest about being a reconstruction -->
+      <div class="rounded-xl border border-[var(--color-tertiary)]/30 bg-[var(--color-tertiary)]/5 p-5">
+        <h2 class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-tertiary)]">
+          {dict.demoPage.honest.label}
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+          {dict.demoPage.honest.body}
+        </p>
+      </div>
+    </aside>
+  </div>
+</SectionWrapper>
+
+<!-- CTA -->
+<SectionWrapper id="demo-cta" revealType="fade-up">
+  <div class="mx-auto max-w-2xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-10 text-center">
+    <h2 class="text-2xl font-bold text-[var(--color-fg)] sm:text-3xl">
+      {dict.demoPage.cta.headline}
+    </h2>
+    <p class="mt-3 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+      {dict.demoPage.cta.subheadline}
+    </p>
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href={locale === 'en' ? '/#install' : '/es/#install'}
+        class="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-5 py-3 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+      >
+        {dict.demoPage.cta.ctaInstall}
+      </a>
+    </div>
+  </div>
+</SectionWrapper>
+
+<script>
+  /**
+   * Vanilla xterm bootstrap. No React, no island.
+   * Loads on md+ viewports only (mobile gets the warning above).
+   */
+  import { Terminal } from '@xterm/xterm';
+  import { FitAddon } from '@xterm/addon-fit';
+
+  type State = 'welcome' | 'menu' | 'installing' | 'done';
+
+  const PERSONAS = [
+    { id: 'gentleman', label: 'Full Gentleman', preset: 'full-gentleman' },
+    { id: 'ecosystem', label: 'Ecosystem Only', preset: 'ecosystem-only' },
+    { id: 'minimal', label: 'Minimal', preset: 'minimal' },
+  ] as const;
+
+  const COLOR = {
+    primary: '\x1b[38;2;233;30;140m',
+    secondary: '\x1b[38;2;34;211;238m',
+    tertiary: '\x1b[38;2;168;85;247m',
+    muted: '\x1b[38;2;144;144;171m',
+    fg: '\x1b[38;2;228;228;239m',
+    reset: '\x1b[0m',
+    dim: '\x1b[2m',
+    bold: '\x1b[1m',
+  };
+
+  function init(): void {
+    const host = document.querySelector<HTMLElement>('[data-demo-host]');
+    if (!host) return;
+    if (window.innerWidth < 768) return;
+
+    const term = new Terminal({
+      cursorBlink: true,
+      fontFamily: 'Iosevka, ui-monospace, monospace',
+      fontSize: 14,
+      lineHeight: 1.4,
+      theme: {
+        background: '#0a0a0f',
+        foreground: '#e4e4ef',
+        cursor: '#E91E8C',
+        selectionBackground: '#E91E8C66',
+        black: '#0a0a0f',
+        brightBlack: '#1e1e2e',
+      },
+      convertEol: true,
+      disableStdin: false,
+    });
+
+    const fit = new FitAddon();
+    term.loadAddon(fit);
+    term.open(host);
+    requestAnimationFrame(() => fit.fit());
+
+    let state: State = 'welcome';
+    let cursor = 0;
+
+    const writeln = (s: string): void => term.writeln(s);
+    const write = (s: string): void => term.write(s);
+
+    function clear(): void {
+      term.clear();
+      term.write('\x1b[H');
+    }
+
+    async function typeLine(line: string, delay = 18): Promise<void> {
+      for (const char of line) {
+        term.write(char);
+        await sleep(delay);
+      }
+      term.writeln('');
+    }
+
+    function sleep(ms: number): Promise<void> {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function welcome(): Promise<void> {
+      state = 'welcome';
+      clear();
+      writeln('');
+      writeln(`  ${COLOR.primary}${COLOR.bold}gentle-ai${COLOR.reset}  ${COLOR.muted}— Gentleman Programming ecosystem${COLOR.reset}`);
+      writeln('');
+      await sleep(280);
+      await typeLine(`  ${COLOR.muted}Welcome. This is a browser reconstruction of the install TUI.${COLOR.reset}`);
+      await typeLine(`  ${COLOR.muted}Use ${COLOR.fg}↑${COLOR.muted} ${COLOR.fg}↓${COLOR.muted} to move, ${COLOR.fg}Enter${COLOR.muted} to select, ${COLOR.fg}Esc${COLOR.muted} to restart.${COLOR.reset}`);
+      writeln('');
+      await sleep(420);
+      menu();
+    }
+
+    function menu(): void {
+      state = 'menu';
+      cursor = 0;
+      renderMenu();
+    }
+
+    function renderMenu(): void {
+      // Wipe the menu region. We re-print the whole frame to keep it simple.
+      clear();
+      writeln('');
+      writeln(`  ${COLOR.primary}${COLOR.bold}gentle-ai${COLOR.reset}  ${COLOR.muted}— pick your preset${COLOR.reset}`);
+      writeln('');
+      PERSONAS.forEach((option, idx) => {
+        const arrow = idx === cursor ? `${COLOR.primary}❯${COLOR.reset}` : ' ';
+        const label = idx === cursor ? `${COLOR.fg}${COLOR.bold}${option.label}${COLOR.reset}` : `${COLOR.muted}${option.label}${COLOR.reset}`;
+        const flag = idx === cursor ? `${COLOR.secondary}--preset ${option.preset}${COLOR.reset}` : '';
+        writeln(`  ${arrow} ${label}  ${flag}`);
+      });
+      writeln('');
+      writeln(`  ${COLOR.dim}${COLOR.muted}Press Enter to install · Esc to restart${COLOR.reset}`);
+    }
+
+    async function install(option: (typeof PERSONAS)[number]): Promise<void> {
+      state = 'installing';
+      clear();
+      writeln('');
+      writeln(`  ${COLOR.primary}${COLOR.bold}gentle-ai install${COLOR.reset} ${COLOR.secondary}--preset ${option.preset}${COLOR.reset}`);
+      writeln('');
+      await sleep(380);
+
+      const steps = [
+        'Resolving registry…',
+        'Downloading components…',
+        'Setting up Engram memory layer…',
+        'Wiring SDD pipeline…',
+        'Installing Skills…',
+        'Configuring Persona…',
+        'Linking agent integrations…',
+        'Done.',
+      ];
+      for (const step of steps) {
+        await typeLine(`  ${COLOR.tertiary}✓${COLOR.reset} ${step}`, 12);
+        await sleep(180);
+      }
+
+      writeln('');
+      writeln(`  ${COLOR.primary}${COLOR.bold}Ready.${COLOR.reset} ${COLOR.fg}Run ${COLOR.secondary}gentle-ai --help${COLOR.fg} to start.${COLOR.reset}`);
+      writeln('');
+      writeln(`  ${COLOR.muted}This was a reconstruction. Install gentle-ai to run it for real.${COLOR.reset}`);
+      writeln('');
+      writeln(`  ${COLOR.dim}${COLOR.muted}Press Esc to restart the demo.${COLOR.reset}`);
+      state = 'done';
+    }
+
+    term.onKey(({ domEvent }) => {
+      if (state === 'menu') {
+        if (domEvent.key === 'ArrowDown') {
+          cursor = (cursor + 1) % PERSONAS.length;
+          renderMenu();
+          domEvent.preventDefault();
+        } else if (domEvent.key === 'ArrowUp') {
+          cursor = (cursor - 1 + PERSONAS.length) % PERSONAS.length;
+          renderMenu();
+          domEvent.preventDefault();
+        } else if (domEvent.key === 'Enter') {
+          install(PERSONAS[cursor]);
+          domEvent.preventDefault();
+        } else if (domEvent.key === 'Escape') {
+          welcome();
+          domEvent.preventDefault();
+        }
+      } else if (state === 'done' || state === 'welcome') {
+        if (domEvent.key === 'Escape') {
+          welcome();
+          domEvent.preventDefault();
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => fit.fit(), { passive: true });
+
+    // Focus the host so keyboard events go to xterm.
+    host.addEventListener('click', () => term.focus());
+
+    welcome();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>

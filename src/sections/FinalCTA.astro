@@ -1,0 +1,72 @@
+---
+/**
+ * Final CTA — bordered container with gradient top/bottom lines,
+ * multi-line headline (gradient on the second line).
+ */
+import { t, type Locale } from '../i18n';
+import { PRODUCT_REPO } from '../lib/repo';
+import SectionWrapper from '../components/SectionWrapper.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+<SectionWrapper id="final-cta" revealType="fade-up">
+  <div class="relative mx-auto max-w-4xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-14 text-center md:py-20">
+    <span
+      class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--color-primary)] to-transparent"
+      aria-hidden="true"
+    />
+    <span
+      class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--color-tertiary)] to-transparent"
+      aria-hidden="true"
+    />
+
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-primary)]">
+      {dict.finalCta.eyebrow}
+    </span>
+    <h2 class="mt-3 text-3xl font-bold leading-[1.1] tracking-tight text-[var(--color-fg)] sm:text-4xl md:text-5xl">
+      {
+        dict.finalCta.headlineLines.map((line, idx) => (
+          <span class="block">
+            {idx === dict.finalCta.headlineLines.length - 1 ? (
+              <span class="bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-tertiary)] bg-clip-text text-transparent">
+                {line}
+              </span>
+            ) : (
+              line
+            )}
+          </span>
+        ))
+      }
+    </h2>
+    <p class="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.finalCta.subheadline}
+    </p>
+
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        href="#install"
+        class="inline-flex items-center gap-2 rounded-md bg-[var(--color-primary)] px-5 py-3 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+      >
+        {dict.finalCta.ctaInstall}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14"></path>
+          <path d="M12 5l7 7-7 7"></path>
+        </svg>
+      </a>
+      <a
+        href={PRODUCT_REPO.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-5 py-3 text-sm font-medium text-[var(--color-fg)] transition-colors duration-200 hover:border-[var(--color-primary)]"
+      >
+        {dict.finalCta.ctaGithub}
+      </a>
+    </div>
+  </div>
+</SectionWrapper>

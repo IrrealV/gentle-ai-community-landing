@@ -1,0 +1,73 @@
+---
+/**
+ * macOS-window terminal shell (Becker chrome + Fabri scanline).
+ *
+ * Decorative-only: traffic-light dots are visual, NOT interactive (Gentleman
+ * anti-pattern: do not make them look clickable). Pass content via the slot.
+ */
+interface Props {
+  title?: string;
+  class?: string;
+}
+
+const { title = 'gentle-ai', class: className = '' } = Astro.props;
+---
+
+<div
+  class={`terminal-shell overflow-hidden rounded-xl border border-[var(--color-border)] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.5)] ${className}`}
+>
+  <div class="flex items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface-muted)] px-4 py-2.5">
+    <div class="flex gap-1.5" aria-hidden="true">
+      <span class="h-3 w-3 rounded-full bg-red-500/70"></span>
+      <span class="h-3 w-3 rounded-full bg-yellow-500/70"></span>
+      <span class="h-3 w-3 rounded-full bg-green-500/70"></span>
+    </div>
+    <span class="ml-2 font-mono text-xs text-[var(--color-fg-muted)]">{title}</span>
+  </div>
+  <div class="terminal-content bg-[var(--color-surface)] p-5 font-mono text-sm leading-relaxed text-[var(--color-fg)]">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .terminal-content {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .terminal-content::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--color-primary) 50%,
+      transparent 100%
+    );
+    opacity: 0.35;
+  }
+
+  .terminal-content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.025) 0,
+      rgb(255 255 255 / 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: screen;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .terminal-content::after {
+      background: none;
+    }
+  }
+</style>

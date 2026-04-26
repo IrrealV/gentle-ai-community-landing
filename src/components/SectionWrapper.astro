@@ -1,0 +1,42 @@
+---
+/**
+ * Section wrapper with built-in scroll reveal (Fabri pattern).
+ *
+ * Every page section uses this. Reveal animation honours
+ * `prefers-reduced-motion` via the rules in `src/styles/global.css`.
+ */
+type RevealType = 'fade-up' | 'fade' | 'slide-left' | 'slide-right' | 'scale';
+
+interface Props {
+  id?: string;
+  class?: string;
+  reveal?: boolean;
+  revealType?: RevealType;
+  /** Render as a non-section element (e.g. `div` for a nested block). */
+  as?: 'section' | 'div';
+}
+
+const {
+  id,
+  class: className = '',
+  reveal = true,
+  revealType = 'fade-up',
+  as = 'section',
+} = Astro.props;
+
+const Tag = as;
+const revealClass = reveal
+  ? 'reveal-prep motion-reduce:opacity-100 motion-reduce:translate-y-0'
+  : '';
+---
+
+<Tag
+  id={id}
+  data-reveal={reveal ? '' : undefined}
+  data-reveal-type={reveal ? revealType : undefined}
+  class={`relative py-20 md:py-28 ${revealClass} ${className}`}
+>
+  <div class="mx-auto w-full max-w-7xl px-6">
+    <slot />
+  </div>
+</Tag>

@@ -1,0 +1,183 @@
+---
+/**
+ * Unified navbar — same link set on every page.
+ *
+ * Why: an earlier version split into "marketing" (section anchors) vs
+ * "compact" (page links) variants. That made the navbar feel like two
+ * different sites depending on the page, and section anchors silently broke
+ * from inner pages. The fix is to expose only links that work everywhere.
+ *
+ * Section content on the home page (Problem / Solution / Agents / Presets /
+ * Community) is reachable by scrolling — modern landing convention. The Install
+ * CTA on the right always navigates to home and scrolls to `#install`.
+ *
+ * Lang switcher: native Astro route redirect between `/` and `/es/`.
+ */
+import { t, type Locale } from '../i18n';
+import { PRODUCT_REPO } from '../lib/repo';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+const localePrefix = locale === 'en' ? '' : '/es';
+const homeHref = locale === 'en' ? '/' : '/es/';
+const altLocaleHref = locale === 'en' ? '/es/' : '/';
+
+const links = [
+  {
+    key: 'features',
+    href: `${localePrefix}/features/`,
+    label: dict.nav2.features,
+  },
+  {
+    key: 'how-it-works',
+    href: `${localePrefix}/how-it-works/`,
+    label: dict.nav2.howItWorksPage,
+  },
+  {
+    key: 'demo',
+    href: `${localePrefix}/demo/`,
+    label: dict.nav2.demo,
+  },
+];
+
+// Install CTA always lands on the home page's #install section.
+const installHref = `${homeHref}#install`;
+---
+
+<header
+  class="navbar sticky top-0 z-50 border-b border-transparent bg-[var(--color-surface)]/0 transition-[background-color,border-color,backdrop-filter] duration-300"
+  data-navbar
+>
+  <div class="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
+    <a
+      href={homeHref}
+      class="flex items-center gap-2 font-mono text-sm font-bold tracking-tight text-[var(--color-fg)] hover:text-[var(--color-primary)]"
+    >
+      <span
+        class="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+        aria-hidden="true"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 17l6-6-6-6"></path>
+          <path d="M12 19h8"></path>
+        </svg>
+      </span>
+      gentle-ai
+    </a>
+
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class="rounded-md px-3 py-1.5 text-sm text-[var(--color-fg-muted)] transition-colors duration-200 hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={altLocaleHref}
+        class="hidden items-center gap-1 rounded-md border border-[var(--color-border)] px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider text-[var(--color-fg-muted)] transition-colors duration-200 hover:border-[var(--color-primary)] hover:text-[var(--color-fg)] sm:inline-flex"
+        aria-label={dict.nav.switchLang}
+      >
+        {dict.nav.switchLang}
+      </a>
+
+      <a
+        href={PRODUCT_REPO.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden items-center justify-center rounded-md border border-[var(--color-border)] p-2 text-[var(--color-fg-muted)] transition-colors duration-200 hover:border-[var(--color-primary)] hover:text-[var(--color-fg)] sm:inline-flex"
+        aria-label="GitHub"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.16c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.41-5.27 5.69.41.36.78 1.07.78 2.16v3.21c0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"></path>
+        </svg>
+      </a>
+
+      <a
+        href={installHref}
+        class="inline-flex items-center rounded-md bg-[var(--color-primary)] px-3 py-1.5 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+      >
+        {dict.nav.ctaInstall}
+      </a>
+
+      <details class="relative md:hidden" data-mobile-menu>
+        <summary
+          class="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md border border-[var(--color-border)] text-[var(--color-fg-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-fg)] [&::-webkit-details-marker]:hidden"
+          aria-label="Toggle menu"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" x2="21" y1="6" y2="6"></line>
+            <line x1="3" x2="21" y1="12" y2="12"></line>
+            <line x1="3" x2="21" y1="18" y2="18"></line>
+          </svg>
+        </summary>
+        <div class="absolute right-0 top-full mt-2 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg">
+          <nav class="flex flex-col gap-1" aria-label="Mobile primary">
+            {
+              links.map((link) => (
+                <a
+                  href={link.href}
+                  class="rounded-md px-3 py-2 text-sm text-[var(--color-fg-muted)] hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-fg)]"
+                >
+                  {link.label}
+                </a>
+              ))
+            }
+            <a
+              href={altLocaleHref}
+              class="mt-1 rounded-md border-t border-[var(--color-border)] px-3 py-2 pt-3 font-mono text-xs uppercase tracking-wider text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]"
+            >
+              {dict.nav.switchLang}
+            </a>
+          </nav>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .navbar.is-scrolled {
+    background-color: color-mix(in oklab, var(--color-surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom-color: var(--color-border);
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    if (window.__navbarInitialized) return;
+    window.__navbarInitialized = true;
+
+    var navbar = document.querySelector('[data-navbar]');
+    if (!navbar) return;
+
+    function update() {
+      if (window.scrollY > 8) navbar.classList.add('is-scrolled');
+      else navbar.classList.remove('is-scrolled');
+    }
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+
+    // Close mobile menu on link click.
+    var details = navbar.querySelector('[data-mobile-menu]');
+    if (details) {
+      details.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.tagName === 'A') details.removeAttribute('open');
+      });
+    }
+  })();
+</script>

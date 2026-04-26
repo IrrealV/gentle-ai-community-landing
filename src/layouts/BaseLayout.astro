@@ -1,0 +1,130 @@
+---
+import '../styles/global.css';
+import type { Locale } from '../i18n';
+
+export interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  /** Slug used to look up a build-time OG image at /og/{slug}.png */
+  ogSlug?: string;
+  /** Canonical pathname without origin, e.g. "/", "/es/" */
+  canonicalPath?: string;
+}
+
+const {
+  title,
+  description,
+  locale,
+  ogSlug = 'default',
+  canonicalPath = Astro.url.pathname,
+} = Astro.props;
+
+const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonical = `${site}${canonicalPath}`;
+const ogImage = `${site}/og/${ogSlug}.png`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- favicon kit -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" sizes="32x32" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#0a0a0f" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gentle AI Community" />
+    <meta property="og:locale" content={locale === 'es' ? 'es_AR' : 'en_US'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- i18n alternates -->
+    <link rel="alternate" hreflang="en" href={`${site}/`} />
+    <link rel="alternate" hreflang="es" href={`${site}/es/`} />
+    <link rel="alternate" hreflang="x-default" href={`${site}/`} />
+  </head>
+  <body data-lang={locale}>
+    <slot />
+
+    <script is:inline>
+      (function () {
+        if (window.__revealInitialized) return;
+        window.__revealInitialized = true;
+
+        var prefersReduced =
+          'matchMedia' in window &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Reveal individual sections.
+        var elements = document.querySelectorAll('[data-reveal]');
+        if (prefersReduced || !('IntersectionObserver' in window)) {
+          elements.forEach(function (el) {
+            el.classList.add('reveal-visible');
+          });
+        } else {
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('reveal-visible');
+                  io.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.12, rootMargin: '0px 0px -10% 0px' },
+          );
+          elements.forEach(function (el) {
+            io.observe(el);
+          });
+        }
+
+        // Reveal stagger groups.
+        var groups = document.querySelectorAll('[data-reveal-stagger]');
+        groups.forEach(function (group, gIdx) {
+          var items = group.querySelectorAll('[data-reveal-item]');
+          items.forEach(function (item, idx) {
+            item.style.setProperty('--stagger-index', idx);
+          });
+          if (prefersReduced || !('IntersectionObserver' in window)) {
+            group.classList.add('is-revealed');
+            return;
+          }
+          var sio = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-revealed');
+                  sio.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.15 },
+          );
+          sio.observe(group);
+        });
+      })();
+    </script>
+  </body>
+</html>

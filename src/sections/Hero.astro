@@ -175,7 +175,14 @@ const HERO_TABS: HeroTab[] = [
               ))
             }
           </div>
-          <p class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]" data-hero-os-hint>
+          <p
+            class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]"
+            data-hero-os-hint
+            data-hint-mac={dict.hero.osHints.mac}
+            data-hint-windows={dict.hero.osHints.windows}
+            data-hint-linux={dict.hero.osHints.linux}
+            data-hint-unknown={dict.hero.osHints.unknown}
+          >
             {dict.hero.osHints.unknown}
           </p>
           {
@@ -251,14 +258,7 @@ const HERO_TABS: HeroTab[] = [
         linux: hint.dataset.hintLinux,
         unknown: hint.dataset.hintUnknown,
       };
-      // Hints come from i18n via aria-label fallback; keep current placeholder text.
-      var hintText = {
-        mac: hint.textContent.includes('Detected') ? hint.textContent : 'Detected ' + 'macOS',
-        windows: 'Detected Windows',
-        linux: 'Detected Linux',
-        unknown: hint.textContent,
-      };
-      hint.textContent = hintText[os] || hint.textContent;
+      hint.textContent = hintMap[os] || hintMap.unknown || hint.textContent;
     }
 
     tabs.forEach(function (tab, idx) {

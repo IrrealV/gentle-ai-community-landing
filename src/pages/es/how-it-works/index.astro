@@ -1,0 +1,17 @@
+---
+import SubPageLayout from '../../../layouts/SubPageLayout.astro';
+import HowItWorksContent from '../../../sections/HowItWorksContent.astro';
+import { t } from '../../../i18n';
+
+const dict = t('es');
+---
+
+<SubPageLayout
+  title={dict.howItWorksPage.meta.title}
+  description={dict.howItWorksPage.meta.description}
+  locale="es"
+  ogSlug="how-it-works-es"
+  canonicalPath="/es/how-it-works/"
+>
+  <HowItWorksContent locale="es" />
+</SubPageLayout>

@@ -1,0 +1,17 @@
+---
+import SubPageLayout from '../../layouts/SubPageLayout.astro';
+import DemoContent from '../../sections/DemoContent.astro';
+import { t } from '../../i18n';
+
+const dict = t('en');
+---
+
+<SubPageLayout
+  title={dict.demoPage.meta.title}
+  description={dict.demoPage.meta.description}
+  locale="en"
+  ogSlug="demo"
+  canonicalPath="/demo/"
+>
+  <DemoContent locale="en" />
+</SubPageLayout>

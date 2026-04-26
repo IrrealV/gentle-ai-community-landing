@@ -1,3 +1,67 @@
-/.github/ @IrrealV
-* @IrrealV @GerardoFC8 @fabriortenzi @niko05becker
-/.github/CODEOWNERS @IrrealV
+# Domain ownership per docs/README.md §4.1.
+# Cross-domain PRs need BOTH leads to approve. A lead may delegate, but
+# ownership does not transfer without a PR updating docs/README.md §4.1.
+
+# Catch-all — every PR needs review from at least one lead.
+*                       @IrrealV @GerardoFC8 @fabriortenzi @niko05becker
+
+# Governance + CI/CD + repo automation
+/.github/               @IrrealV
+/.github/CODEOWNERS     @IrrealV
+/CONTRIBUTING.md        @IrrealV
+/GOVERNANCE.md          @IrrealV
+/README.md              @IrrealV
+
+# i18n + narrative + data layer (Gerardo)
+/src/i18n/              @GerardoFC8
+/src/data/              @GerardoFC8
+/src/lib/github.ts      @GerardoFC8
+
+# Design tokens + typography + reduced-motion (Fabri)
+/src/styles/            @fabriortenzi
+/src/lib/motion.ts      @fabriortenzi
+/public/og/             @fabriortenzi @niko05becker
+
+# Hero + install widget + OG pipeline + Presets (Becker)
+/scripts/generate-og.ts   @niko05becker
+/scripts/generate-icons.ts @niko05becker
+/src/layouts/             @niko05becker
+/src/sections/Hero.astro  @niko05becker @IrrealV
+/src/sections/Presets.astro @niko05becker
+
+# Install methods + reduced-motion + Iosevka (Fabri)
+/src/sections/Install.astro @fabriortenzi
+/src/components/Terminal.astro @fabriortenzi
+
+# Narrative sections + agents data + Persona pillar (Gerardo)
+/src/sections/Problem.astro     @GerardoFC8
+/src/sections/Solution.astro    @GerardoFC8
+/src/sections/HowItWorks.astro  @GerardoFC8
+/src/sections/AgentsGrid.astro  @GerardoFC8
+/src/sections/BuildAgent.astro  @GerardoFC8
+/src/sections/Community.astro   @GerardoFC8
+/src/sections/FinalCTA.astro    @GerardoFC8
+/src/components/Footer.astro    @GerardoFC8
+
+# Multi-page chrome — Navbar, CopyButton, ARIA patterns (IrrealV)
+/src/components/Navbar.astro     @IrrealV
+/src/components/CopyButton.astro @IrrealV
+/src/layouts/SubPageLayout.astro @IrrealV
+
+# /features + /how-it-works extended pages (Gerardo narrative)
+/src/pages/features/             @GerardoFC8
+/src/pages/es/features/          @GerardoFC8
+/src/pages/how-it-works/         @GerardoFC8
+/src/pages/es/how-it-works/      @GerardoFC8
+/src/sections/FeaturesContent.astro    @GerardoFC8
+/src/sections/HowItWorksContent.astro  @GerardoFC8
+
+# /demo — keyboard-driven xterm reconstruction (IrrealV pattern, no React)
+/src/pages/demo/             @IrrealV
+/src/pages/es/demo/           @IrrealV
+/src/sections/DemoContent.astro @IrrealV
+
+# /docs + /demo + manual (IrrealV)
+/docs/                  @IrrealV
+/src/pages/docs/        @IrrealV
+/src/pages/demo/        @IrrealV

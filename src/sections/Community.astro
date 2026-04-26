@@ -1,0 +1,151 @@
+---
+/**
+ * Community section — stats bar (build-time data, NOT React) + tribute card +
+ * contributor avatar grid + dual CTA.
+ *
+ * Stats are resolved at build time via `src/lib/github.ts` against the
+ * PRODUCT_REPO. No React island, no client-side fetch (Gentleman: data must
+ * be live, not hardcoded).
+ */
+import { t, type Locale } from '../i18n';
+import { fetchRepoStats } from '../lib/github';
+import { PRODUCT_REPO, SOCIAL } from '../lib/repo';
+import SectionWrapper from '../components/SectionWrapper.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+let stats: Awaited<ReturnType<typeof fetchRepoStats>> | null = null;
+try {
+  stats = await fetchRepoStats(PRODUCT_REPO.owner, PRODUCT_REPO.name);
+} catch (err) {
+  console.warn('[Community] Could not resolve repo stats:', err);
+}
+
+const formatStat = (n: number | undefined): string => {
+  if (n === undefined) return '—';
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
+  return String(n);
+};
+
+const topContributors = stats?.contributors.slice(0, 12) ?? [];
+---
+
+<SectionWrapper id="community" revealType="fade-up">
+  <header class="mx-auto max-w-3xl text-center">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">
+      {dict.community.eyebrow}
+    </span>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-[var(--color-fg)] sm:text-4xl md:text-5xl">
+      {dict.community.headline}
+    </h2>
+    <p class="mt-5 text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.community.intro}
+    </p>
+  </header>
+
+  <div class="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-border)] md:grid-cols-4">
+    <div class="bg-[var(--color-surface)] p-5 text-center">
+      <p class="font-mono text-2xl font-bold text-[var(--color-primary)]">
+        {formatStat(stats?.stars)}
+      </p>
+      <p class="mt-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+        {dict.community.statsLabels.stars}
+      </p>
+    </div>
+    <div class="bg-[var(--color-surface)] p-5 text-center">
+      <p class="font-mono text-2xl font-bold text-[var(--color-secondary)]">
+        {formatStat(stats?.forks)}
+      </p>
+      <p class="mt-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+        {dict.community.statsLabels.forks}
+      </p>
+    </div>
+    <div class="bg-[var(--color-surface)] p-5 text-center">
+      <p class="font-mono text-2xl font-bold text-[var(--color-tertiary)]">
+        {formatStat(stats?.contributors.length)}
+      </p>
+      <p class="mt-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+        {dict.community.statsLabels.contributors}
+      </p>
+    </div>
+    <div class="bg-[var(--color-surface)] p-5 text-center">
+      <p class="font-mono text-base font-bold text-[var(--color-fg)]">
+        {stats?.latestRelease?.tag ?? '—'}
+      </p>
+      <p class="mt-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+        {dict.community.statsLabels.version}
+      </p>
+    </div>
+  </div>
+
+  {
+    topContributors.length > 0 && (
+      <div class="mt-10">
+        <p class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)] text-center">
+          {dict.community.contributorsLabel}
+        </p>
+        <ul class="mt-4 flex flex-wrap justify-center gap-2">
+          {topContributors.map((contributor) => (
+            <li>
+              <a
+                href={contributor.htmlUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${contributor.login} — ${contributor.contributions}`}
+                class="inline-flex"
+              >
+                <img
+                  src={contributor.avatarUrl}
+                  alt=""
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  class="h-10 w-10 rounded-full border border-[var(--color-border)] transition-transform duration-200 hover:scale-110"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <blockquote class="mx-auto mt-12 max-w-2xl rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-muted)]/40 p-6 text-center">
+    <p class="text-base italic leading-relaxed text-[var(--color-fg)]">
+      {dict.community.tribute.quote}
+    </p>
+    <footer class="mt-3 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+      {dict.community.tribute.attribution}
+    </footer>
+  </blockquote>
+
+  <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
+    <a
+      href={PRODUCT_REPO.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 rounded-md border border-[var(--color-border)] px-5 py-3 text-sm font-medium text-[var(--color-fg)] transition-colors duration-200 hover:border-[var(--color-primary)]"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2.16c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.27-1.69-1.27-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.96.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18.91-.25 1.89-.38 2.86-.38.97 0 1.95.13 2.86.38 2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.41-5.27 5.69.41.36.78 1.07.78 2.16v3.21c0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"></path>
+      </svg>
+      {dict.community.starOnGithub}
+    </a>
+    <a
+      href={SOCIAL.discord}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 rounded-md bg-[var(--color-secondary)] px-5 py-3 text-sm font-medium text-white transition-opacity duration-200 hover:opacity-90"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M19.27 5.33A19.79 19.79 0 0 0 14.4 4l-.24.4a13.2 13.2 0 0 1 4.13 1.84 17.7 17.7 0 0 0-4.93-1c-.7 0-1.4.07-2.1.18A17.86 17.86 0 0 0 6.36 6.24a13.21 13.21 0 0 1 4.13-1.84L10.24 4a19.78 19.78 0 0 0-4.87 1.33C2.7 8.96 1.94 12.5 2.18 15.97a19.93 19.93 0 0 0 6.07 3.07c.5-.69.94-1.42 1.32-2.19a13.07 13.07 0 0 1-2.08-.99c.18-.13.35-.26.51-.4 4.13 1.93 8.6 1.93 12.7 0 .17.14.34.27.52.4a13.07 13.07 0 0 1-2.08.99c.38.77.82 1.5 1.32 2.19a19.92 19.92 0 0 0 6.07-3.07c.27-3.95-.71-7.46-2.93-10.64ZM9.34 14.13c-1.18 0-2.15-1.08-2.15-2.4s.95-2.4 2.15-2.4 2.16 1.08 2.15 2.4c0 1.32-.95 2.4-2.15 2.4Zm5.32 0c-1.18 0-2.15-1.08-2.15-2.4s.95-2.4 2.15-2.4 2.16 1.08 2.15 2.4c0 1.32-.95 2.4-2.15 2.4Z"/>
+      </svg>
+      {dict.community.discord}
+    </a>
+  </div>
+</SectionWrapper>

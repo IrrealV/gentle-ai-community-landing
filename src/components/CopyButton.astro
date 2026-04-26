@@ -1,0 +1,162 @@
+---
+/**
+ * Copy-to-clipboard button (IrrealV pattern, vanilla, no Material Symbols).
+ *
+ * Usage modes:
+ *   1. Inline text:   <CopyButton text="brew install gentle-ai" />
+ *   2. Target query:  wrap content in `data-copy-source` and pass `target` selector
+ *
+ * Behaviour:
+ *   - Tries `navigator.clipboard` first, falls back to `document.execCommand`.
+ *   - 1400ms feedback timer flips icon + aria-label.
+ *   - Single global delegated listener — guarded against double-init.
+ *   - SSR-safe; the script is `is:inline` so it runs once at hydration.
+ */
+interface Props {
+  text?: string;
+  target?: string;
+  ariaLabel?: string;
+  copiedLabel?: string;
+  class?: string;
+}
+
+const {
+  text,
+  target,
+  ariaLabel = 'Copy to clipboard',
+  copiedLabel = 'Copied!',
+  class: className = '',
+} = Astro.props;
+---
+
+<button
+  type="button"
+  class={`copy-btn inline-flex h-9 w-9 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-fg-muted)] transition-colors duration-200 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${className}`}
+  aria-label={ariaLabel}
+  title={ariaLabel}
+  data-copy-button
+  data-copy-text={text}
+  data-copy-target={target}
+  data-copy-label={ariaLabel}
+  data-copy-copied-label={copiedLabel}
+>
+  <svg
+    data-copy-icon-default
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+  </svg>
+  <svg
+    data-copy-icon-success
+    class="hidden"
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M20 6 9 17l-5-5"></path>
+  </svg>
+</button>
+
+<script is:inline>
+  (function () {
+    if (window.__copyButtonsInitialized) return;
+    window.__copyButtonsInitialized = true;
+
+    function fallbackCopy(value) {
+      var textArea = document.createElement('textarea');
+      textArea.value = value;
+      textArea.setAttribute('readonly', '');
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.select();
+      textArea.setSelectionRange(0, textArea.value.length);
+      var success = false;
+      try {
+        success = document.execCommand('copy');
+      } catch (_) {
+        success = false;
+      }
+      document.body.removeChild(textArea);
+      return success;
+    }
+
+    async function copyValue(value) {
+      if (!value) return false;
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(value);
+          return true;
+        } catch (_) {
+          /* fallthrough */
+        }
+      }
+      return fallbackCopy(value);
+    }
+
+    function resolveCopyText(button) {
+      if (button.dataset.copyText) return button.dataset.copyText;
+      var scope = button.closest('[data-copy-scope]') || document;
+      var target = null;
+      if (button.dataset.copyTarget) {
+        target =
+          scope.querySelector(button.dataset.copyTarget) ||
+          document.querySelector(button.dataset.copyTarget);
+      }
+      if (!target) target = scope.querySelector('[data-copy-source]');
+      if (!target) return '';
+      var raw = target.dataset.copyText || target.innerText || '';
+      return raw.replace(/ /g, ' ').replace(/\s+$/, '');
+    }
+
+    function showFeedback(button, success) {
+      var def = button.querySelector('[data-copy-icon-default]');
+      var ok = button.querySelector('[data-copy-icon-success]');
+      if (def) def.classList.toggle('hidden', success);
+      if (ok) ok.classList.toggle('hidden', !success);
+      var label = success
+        ? button.dataset.copyCopiedLabel || 'Copied!'
+        : button.dataset.copyLabel || 'Copy';
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+      if (success) button.classList.add('text-[var(--color-primary)]');
+
+      if (button.__copyTimer) clearTimeout(button.__copyTimer);
+      button.__copyTimer = window.setTimeout(function () {
+        if (def) def.classList.remove('hidden');
+        if (ok) ok.classList.add('hidden');
+        button.classList.remove('text-[var(--color-primary)]');
+        var defLabel = button.dataset.copyLabel || 'Copy';
+        button.setAttribute('aria-label', defLabel);
+        button.setAttribute('title', defLabel);
+      }, 1400);
+    }
+
+    document.addEventListener('click', async function (event) {
+      var t = event.target;
+      if (!t || !(t instanceof Element)) return;
+      var button = t.closest('[data-copy-button]');
+      if (!button) return;
+      var value = resolveCopyText(button);
+      var ok = await copyValue(value);
+      showFeedback(button, ok);
+    });
+  })();
+</script>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../sections/Hero.astro';
+import Problem from '../sections/Problem.astro';
+import Solution from '../sections/Solution.astro';
+import HowItWorks from '../sections/HowItWorks.astro';
+import AgentsGrid from '../sections/AgentsGrid.astro';
+import BuildAgent from '../sections/BuildAgent.astro';
+import Presets from '../sections/Presets.astro';
+import Install from '../sections/Install.astro';
+import Community from '../sections/Community.astro';
+import FinalCTA from '../sections/FinalCTA.astro';
+import Footer from '../components/Footer.astro';
+import { t } from '../i18n';
+
+const dict = t('en');
+---
+
+<BaseLayout
+  title={dict.meta.title}
+  description={dict.meta.description}
+  locale="en"
+  ogSlug="home"
+  canonicalPath="/"
+>
+  <Navbar locale="en" />
+  <main>
+    <Hero locale="en" />
+    <Problem locale="en" />
+    <Solution locale="en" />
+    <HowItWorks locale="en" />
+    <AgentsGrid locale="en" />
+    <BuildAgent locale="en" />
+    <Presets locale="en" />
+    <Install locale="en" />
+    <Community locale="en" />
+    <FinalCTA locale="en" />
+  </main>
+  <Footer locale="en" />
+</BaseLayout>

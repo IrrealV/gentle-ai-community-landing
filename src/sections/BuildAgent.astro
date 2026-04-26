@@ -1,0 +1,76 @@
+---
+/**
+ * BuildAgent — vanilla Astro, NO Card3D React island.
+ *
+ * Two-column: code block on the left, three feature cards on the right.
+ * Lucide icons inline (no React).
+ */
+import { t, type Locale } from '../i18n';
+import SectionWrapper from '../components/SectionWrapper.astro';
+import Terminal from '../components/Terminal.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+const FEATURE_ICONS: Record<string, string> = {
+  'file-tools':
+    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/>',
+  'sdd-integration':
+    '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  registry:
+    '<path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6Z"/><path d="m9 12 2 2 4-4"/>',
+};
+---
+
+<SectionWrapper id="build-agent" revealType="fade-up">
+  <header class="mx-auto max-w-3xl text-center">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-secondary)]">
+      {dict.buildAgent.eyebrow}
+    </span>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-[var(--color-fg)] sm:text-4xl md:text-5xl">
+      {dict.buildAgent.headline}
+    </h2>
+    <p class="mt-5 text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.buildAgent.intro}
+    </p>
+  </header>
+
+  <div class="mt-14 grid gap-8 lg:grid-cols-12">
+    <div class="lg:col-span-6">
+      <Terminal title={dict.buildAgent.codeBlockTitle}>
+        <pre
+          class="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-[var(--color-fg)]"
+        >{dict.buildAgent.codeBlock}</pre>
+      </Terminal>
+    </div>
+
+    <div class="grid gap-4 lg:col-span-6">
+      {
+        dict.buildAgent.features.map((feature) => (
+          <article class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 transition-colors duration-200 hover:border-[var(--color-secondary)]/40">
+            <div class="flex items-start gap-4">
+              <span
+                class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]"
+                aria-hidden="true"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={FEATURE_ICONS[feature.id] ?? ''} />
+              </span>
+              <div>
+                <h3 class="text-base font-semibold text-[var(--color-fg)]">
+                  {feature.title}
+                </h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</SectionWrapper>

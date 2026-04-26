@@ -1,0 +1,102 @@
+---
+/**
+ * Presets — 4 cards (Becker pattern, migrated to Tailwind 4 + design tokens).
+ *
+ * Becker's `dark-*`/`brand-*` palette was Tailwind 3-only. Here the styles
+ * use CSS variables from `@theme`. The `--preset <id>` CLI footer is
+ * `mt-auto` so it stays bottom-aligned regardless of description length
+ * (Gentleman feedback: card CTAs must bottom-align).
+ */
+import { t, type Locale } from '../i18n';
+import { presets, type PresetIcon } from '../data/presets';
+import SectionWrapper from '../components/SectionWrapper.astro';
+import Card from '../components/Card.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+const PRESET_ICONS: Record<PresetIcon, string> = {
+  crown:
+    '<path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>',
+  boxes:
+    '<path d="M2.97 12.92A2 2 0 0 0 2 14.63v3.24a2 2 0 0 0 .97 1.71l3 1.8a2 2 0 0 0 2.06 0L12 18.99l3.97 2.4a2 2 0 0 0 2.06 0l3-1.8a2 2 0 0 0 .97-1.71v-3.24a2 2 0 0 0-.97-1.71L17 10.51V7a2 2 0 0 0-.97-1.71l-3-1.8a2 2 0 0 0-2.06 0l-3 1.8A2 2 0 0 0 7 7v3.51l-4.03 2.41Z"/>',
+  minus: '<path d="M5 12h14"/>',
+  'sliders-horizontal':
+    '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>',
+};
+---
+
+<SectionWrapper id="presets" revealType="fade-up">
+  <header class="mx-auto max-w-3xl text-center">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-tertiary)]">
+      {dict.presets.eyebrow}
+    </span>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-[var(--color-fg)] sm:text-4xl md:text-5xl">
+      {dict.presets.headline}
+    </h2>
+    <p class="mt-5 text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.presets.intro}
+    </p>
+  </header>
+
+  <div
+    data-reveal-stagger
+    style="--stagger-step: 90ms;"
+    class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+  >
+    {
+      presets.map((preset) => {
+        const item = dict.presets.items[preset.id as keyof typeof dict.presets.items];
+        const badge = dict.presets.badges[preset.badgeKey];
+        return (
+          <div data-reveal-item>
+            <Card highlight={preset.highlight}>
+              <div class="flex items-start justify-between">
+                <span
+                  class="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[var(--color-tertiary)]/10 text-[var(--color-tertiary)]"
+                  aria-hidden="true"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={PRESET_ICONS[preset.icon]} />
+                </span>
+                <span class="rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+                  {badge}
+                </span>
+              </div>
+              <h3 class="mt-4 text-lg font-semibold text-[var(--color-fg)]">
+                {item.name}
+              </h3>
+              <p class="mt-1 text-sm font-medium text-[var(--color-fg-muted)]">
+                {item.tagline}
+              </p>
+              <p class="mt-3 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+                {item.description}
+              </p>
+              {preset.included.length > 0 && (
+                <ul class="mt-4 flex flex-wrap gap-1.5">
+                  {preset.included.map((entry) => (
+                    <li class="rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-0.5 font-mono text-[10px] text-[var(--color-fg-muted)]">
+                      {entry}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              <div slot="footer" class="space-y-2">
+                <p class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-fg-muted)]">
+                  {dict.presets.cliLabel}
+                </p>
+                <code class="block rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-2 font-mono text-xs text-[var(--color-fg)]">
+                  --preset {preset.cliFlag}
+                </code>
+              </div>
+            </Card>
+          </div>
+        );
+      })
+    }
+  </div>
+</SectionWrapper>

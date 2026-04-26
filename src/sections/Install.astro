@@ -1,0 +1,179 @@
+---
+/**
+ * Install section — 5 OS install methods + post-install (sync + auto-update).
+ *
+ * Builds the 5-tab ARIA tablist (Fabri pattern) using the data from
+ * `src/data/install.ts`. Keyboard handler combines:
+ *   - ArrowLeft/Right + Home/End (IrrealV)
+ *   - Enter/Space activation (Fabri)
+ *
+ * The post-install panel renders `sync` + `auto-update` as a separate block
+ * underneath the main tabs — this is the gap the Gentleman flagged across
+ * all four reference landings.
+ */
+import { t, type Locale } from '../i18n';
+import { installMethods } from '../data/install';
+import SectionWrapper from '../components/SectionWrapper.astro';
+import Terminal from '../components/Terminal.astro';
+import CopyButton from '../components/CopyButton.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+const installTabs = installMethods.filter((m) => m.kind === 'install');
+const postInstall = installMethods.filter((m) => m.kind === 'post-install');
+---
+
+<SectionWrapper id="install" revealType="scale">
+  <header class="mx-auto max-w-3xl text-center">
+    <span class="font-mono text-xs uppercase tracking-[0.18em] text-[var(--color-primary)]">
+      {dict.install.eyebrow}
+    </span>
+    <h2 class="mt-3 text-3xl font-bold tracking-tight text-[var(--color-fg)] sm:text-4xl md:text-5xl">
+      {dict.install.headline}
+    </h2>
+    <p class="mt-5 text-base leading-relaxed text-[var(--color-fg-muted)] md:text-lg">
+      {dict.install.intro}
+    </p>
+  </header>
+
+  <div class="mx-auto mt-12 max-w-3xl" data-install-root>
+    <div role="tablist" aria-label="Install method" class="flex flex-wrap gap-1.5 border-b border-[var(--color-border)] pb-2">
+      {
+        installTabs.map((method, idx) => (
+          <button
+            type="button"
+            role="tab"
+            id={`install-tab-${method.id}`}
+            aria-controls={`install-panel-${method.id}`}
+            aria-selected={idx === 0 ? 'true' : 'false'}
+            tabindex={idx === 0 ? 0 : -1}
+            data-install-tab
+            class="rounded-md px-3 py-1.5 font-mono text-xs text-[var(--color-fg-muted)] transition-colors duration-200 hover:text-[var(--color-fg)] aria-selected:bg-[var(--color-primary)]/15 aria-selected:text-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+          >
+            {method.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="mt-4">
+      {
+        installTabs.map((method, idx) => (
+          <div
+            role="tabpanel"
+            id={`install-panel-${method.id}`}
+            aria-labelledby={`install-tab-${method.id}`}
+            hidden={idx !== 0}
+            data-install-panel
+          >
+            <Terminal title={method.title}>
+              <div class="flex items-start gap-3" data-copy-scope>
+                <pre
+                  class="flex-1 overflow-x-auto font-mono text-xs leading-relaxed text-[var(--color-fg)] sm:text-sm"
+                  data-copy-source
+                >{method.command}</pre>
+                <CopyButton text={method.command} ariaLabel={dict.install.copy} copiedLabel={dict.install.copied} />
+              </div>
+            </Terminal>
+            {method.note && (
+              <p class="mt-3 text-xs text-[var(--color-fg-muted)]">{method.note}</p>
+            )}
+          </div>
+        ))
+      }
+    </div>
+
+    {
+      postInstall.length > 0 && (
+        <div class="mt-12 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-muted)]/50 p-6">
+          <header>
+            <span class="font-mono text-[10px] uppercase tracking-wider text-[var(--color-secondary)]">
+              {dict.install.postInstall.headline}
+            </span>
+            <p class="mt-2 text-sm leading-relaxed text-[var(--color-fg-muted)]">
+              {dict.install.postInstall.intro}
+            </p>
+          </header>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            {postInstall.map((method) => {
+              const dictKey = method.id === 'sync' ? 'sync' : 'autoUpdate';
+              const copy = dict.install[dictKey as 'sync' | 'autoUpdate'];
+              return (
+                <article class="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+                  <h3 class="text-sm font-semibold text-[var(--color-fg)]">
+                    {copy.label}
+                  </h3>
+                  <p class="text-xs leading-relaxed text-[var(--color-fg-muted)]">
+                    {copy.description}
+                  </p>
+                  <div class="mt-auto flex items-start gap-2" data-copy-scope>
+                    <code
+                      class="flex-1 overflow-x-auto rounded-md border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-2 font-mono text-xs text-[var(--color-fg)]"
+                      data-copy-source
+                    >
+                      {method.command}
+                    </code>
+                    <CopyButton text={method.command} ariaLabel={dict.install.copy} copiedLabel={dict.install.copied} />
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      )
+    }
+  </div>
+</SectionWrapper>
+
+<script is:inline>
+  (function () {
+    var root = document.querySelector('[data-install-root]');
+    if (!root) return;
+
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[data-install-tab]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[data-install-panel]'));
+
+    function activateById(id) {
+      tabs.forEach(function (tab) {
+        var match = tab.id === 'install-tab-' + id;
+        tab.setAttribute('aria-selected', match ? 'true' : 'false');
+        tab.setAttribute('tabindex', match ? '0' : '-1');
+      });
+      panels.forEach(function (panel) {
+        panel.hidden = panel.id !== 'install-panel-' + id;
+      });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        activateById(tab.id.replace('install-tab-', ''));
+      });
+
+      tab.addEventListener('keydown', function (e) {
+        var key = e.key;
+        var current = tabs.indexOf(document.activeElement);
+        var next = -1;
+        if (key === 'ArrowRight') next = (current + 1) % tabs.length;
+        else if (key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+        else if (key === 'Home') next = 0;
+        else if (key === 'End') next = tabs.length - 1;
+        else if (key === 'Enter' || key === ' ') {
+          activateById(tab.id.replace('install-tab-', ''));
+          e.preventDefault();
+          return;
+        }
+        if (next >= 0) {
+          tabs[next].focus();
+          activateById(tabs[next].id.replace('install-tab-', ''));
+          e.preventDefault();
+        }
+      });
+    });
+  })();
+</script>

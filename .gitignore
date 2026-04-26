@@ -1,4 +1,40 @@
+# reference landings (cloned for inspection only, never committed)
 repo-fabri/
 repo-gerardo/
 repo-irrealv/
 repo-becker/
+
+# build output
+dist/
+.vercel/
+
+# build-generated OG images (Satori, regenerated every build)
+public/og/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.*
+!.env.example
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# editor folders
+.idea/
+
+# playwright-cli scratch (sessions, snapshots, screenshots dropped at repo root)
+/.playwright-cli/
+/*.png

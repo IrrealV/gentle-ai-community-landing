@@ -1,0 +1,35 @@
+---
+/**
+ * Layout for inner pages (`/features`, `/how-it-works`, `/demo`).
+ * Wraps `BaseLayout` and bakes in the unified Navbar + Footer so each page
+ * only writes its sections.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  title: string;
+  description: string;
+  locale: Locale;
+  ogSlug?: string;
+  canonicalPath?: string;
+}
+
+const { title, description, locale, ogSlug, canonicalPath } = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  locale={locale}
+  ogSlug={ogSlug}
+  canonicalPath={canonicalPath}
+>
+  <Navbar locale={locale} />
+  <main>
+    <slot />
+  </main>
+  <Footer locale={locale} />
+</BaseLayout>
